@@ -55,17 +55,28 @@ ball = GameSprite("dp.png", 300, 300, 50, 50, 15)
 
 #cоздание шрифта
 font.init()
-font1 = font.Font(None, 36)
+font1 = font.Font(None, 20)
 font2 = font.Font(None, 80)
+font3 = font.Font(None, 30)
+
+
 finish = True
 run = True
+speed_x = 2
+speed_y = 3 
+
 
 
 while run:
     for e in event.get():
         if e.type == QUIT:
            run = False
-        
+        if e.type == KEYDOWN:
+            if e.key == K_r:
+                finish = True
+                ball.rect.x = 300
+                ball.rect.y = 300
+
     if finish:
         window.blit(background, (0,0))
         player_1.update_l()
@@ -75,36 +86,55 @@ while run:
 
         
         ball.reset()
+        ball.rect.x += speed_x 
+        ball.rect.y += speed_y
         
-        """
+       
 
-# столкновения
-        collide = sprite.groupcollide(monsters, bullets, True, True)
-        for c in collide:
-            score+=1
-            monster = Enemy("ufo.png", randint(0, 610), 0, 80,50, randint(1,5))
-            monsters.add(monster)
+# столкновения c ракеткам
+        if sprite.collide_rect(player_1, ball) or sprite.collide_rect(player_2, ball):
+            speed_x *= -1
+            speed_y *= -1 
+# столкновения cо стеной Х
+        if ball.rect.x <-10:
+            score2+=1
+            ball.rect.x = 300
+            ball.rect.y = 300
+            speed_x*=-1
+        if ball.rect.x>560:
+            score1+=1
+            ball.rect.x = 300
+            ball.rect.y = 300
+            speed_x*=-1
+
+# столкновения cо стеной Y
+        if ball.rect.y < 0 or ball.rect.y>550:
+            speed_y*=-1
+
+     
+        
 #текст на экране
-        text_lose = font1.render('Пропущено: ' +str(lost), 1,(255,255,255))
-        window.blit(text_lose,(10,40))
-        text = font1.render('Счёт: ' +str(score), 1,(255,255,255))
-        window.blit(text,(10,10))
-        win = font2.render('WIN', 1,(255,255,255))
-        lose = font2.render('Lose', 0,(255,255,255))
+        text_score1 = font1.render('Счёт черного: ' +str(score1), 1,(255,255,255))
+        window.blit(text_score1,(10,10))
+        text_score2 = font1.render('Счёт красного: ' +str(score2), 1,(255,255,255))
+        window.blit(text_score2,(480,10))
+        win1 = font2.render("Black Wins", 1, (180, 0, 0))
+        win2 = font2.render("Reds Wins", 1, (180, 0, 0))
+        restart = font3.render("Нажмите R чтоб перезапустить игру", 1, (255,255,255))
+        
+        
 #Победа
-        if score>=10:
-            window.blit(win,(250,250))
+        if score1>=2:
+            window.blit(win1,(150,250))
+            #window.blit(restart,(120, 350))
+            finish = False
+
+        if score2>=2:
+            window.blit(win2,(150,250))
+            #window.blit(restart,(120, 350))
             finish = False
 
 
 
-#Поражение
-        if sprite.spritecollide(ship, monsters, False) or lost >22:
-            window.blit(lose,(250,250))
-            finish = False
-        if sprite.collide_rect(ship, ast):
-            window.blit(lose,(250,250))
-            finish = False
-"""
     display.update()
     clock.tick(FPS)
